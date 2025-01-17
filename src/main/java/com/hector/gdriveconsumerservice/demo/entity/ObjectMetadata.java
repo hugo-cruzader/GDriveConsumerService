@@ -1,8 +1,8 @@
 package com.hector.gdriveconsumerservice.demo.entity;
 
+import com.google.api.client.util.DateTime;
 import lombok.Builder;
 
-import java.util.Date;
 
 @Builder
-public record ObjectMetadata(String name, String type, Date lastModifiedDate) { }
+public record ObjectMetadata(String name, String type, DateTime lastModifiedDate, String uri) { }

@@ -13,7 +13,7 @@ public class DownloadFileController {
     @GetMapping("/files/{fileId}/download")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileId) {
         // STUB Logic to download the file
-        Resource demoFile = new ClassPathResource("stubfiles/demoDownload.txt");
+        final Resource demoFile = new ClassPathResource("stubfiles/demoDownload.txt");
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + demoFile.getFilename() + "\"")
                 .body(demoFile);
