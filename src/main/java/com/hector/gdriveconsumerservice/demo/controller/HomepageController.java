@@ -19,6 +19,7 @@ import com.hector.gdriveconsumerservice.demo.entity.ObjectMetadata;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -33,12 +34,13 @@ import java.util.List;
 
 @Slf4j
 @Controller
+@RequiredArgsConstructor
 public class HomepageController {
-    private static HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
-    private static JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
-    private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE);
     private static final String USER_IDENTIFIER_KEY = "DEMO_USER";
+
+    private final HttpTransport HTTP_TRANSPORT;
+    private final JsonFactory JSON_FACTORY;
 
     @Value("${google.application.name}")
     private String APPLICATION_NAME;
@@ -46,23 +48,10 @@ public class HomepageController {
     @Value("${google.oauth.callback.uri}")
     private String CALLBACK_URI;
 
-    @Value("${google.secret.key.path}")
-    private Resource gdSecretKeys;
-
     @Value("${demo.file}")
     private Resource demoFile;
 
-    @Value("${google.credentials.folder.path}")
-    private Resource credentialsFolder;
-
-    private GoogleAuthorizationCodeFlow flow;
-
-    @PostConstruct
-    public void init() throws IOException {
-        final GoogleClientSecrets secrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(gdSecretKeys.getInputStream()));
-        flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, secrets, SCOPES)
-                .setDataStoreFactory(new FileDataStoreFactory(credentialsFolder.getFile())).build();
-    }
+    private final GoogleAuthorizationCodeFlow flow;
 
     @GetMapping(value= {"/"})
     public String showHomePage() throws IOException {
@@ -103,7 +92,6 @@ public class HomepageController {
         flow.createAndStoreCredential(response, USER_IDENTIFIER_KEY);
     }
 
-
     @GetMapping(value={"/create"})
     public void createFile(HttpServletResponse response) throws IOException {
         final Credential credential = flow.loadCredential(USER_IDENTIFIER_KEY);
@@ -115,26 +103,4 @@ public class HomepageController {
         final String fileReference = String.format("{fileId: %s}", uploadedFile.getId());
         response.getWriter().write(fileReference);
     }
-
-    @GetMapping(value = {"/listfiles"}, produces = {"application/json"})
-    public ResponseEntity<List<ObjectMetadata>> listFiles() throws IOException {
-        final Credential credential = flow.loadCredential(USER_IDENTIFIER_KEY);
-        final Drive drive =  new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
-
-        final FileList fileList = drive.files().list().setFields("files(name,mimeType,modifiedTime)").execute();
-        return ResponseEntity.ok(fileList.getFiles().stream()
-                .map(file-> ObjectMetadata.builder()
-                        .name(file.getName())
-                        .lastModifiedDate(file.getModifiedTime())
-                        .type(file.getMimeType())
-                        .build())
-                .toList()
-        );
-    }
-
-    private Drive loadCredentials() throws IOException {
-        final Credential credential = flow.loadCredential(USER_IDENTIFIER_KEY);
-        return new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
-    }
-
 }

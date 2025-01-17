@@ -5,4 +5,4 @@ import lombok.Builder;
 
 
 @Builder
-public record ObjectMetadata(String name, String type, DateTime lastModifiedDate, String uri) { }
+public record ObjectMetadata(String id, String name, String type, DateTime lastModifiedDate, String uri) { }
