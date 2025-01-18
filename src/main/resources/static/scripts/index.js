@@ -34,7 +34,7 @@ $(document).ready(function(){
 
     $("#refreshFileButton").click(function(){
         $.ajax({
-            url: '/listfiles',
+            url: '/listfolder',
             }).done(function(data) {
             console.dir(data);
             var fileHTML = "";

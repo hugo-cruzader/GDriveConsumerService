@@ -19,10 +19,10 @@ import java.util.List;
 public class ListFolderController {
     private final GoogleDriveComponent driveComponent;
 
-    @GetMapping(value = {"/listfiles"})
+    @GetMapping(value = {"/listfolder"})
     public ResponseEntity<List<ObjectMetadata>> listFolder(@RequestParam(required = false, defaultValue="root") String folderId)
             throws IOException {
-        log.info("Entering listFiles API rest endpoint...");
+        log.info("Entering listFolder API rest endpoint...");
         final FileList fileList = driveComponent.getFiles();
         return ResponseEntity.ok(fileList.getFiles().stream()
                 .map(file-> ObjectMetadata.builder()
