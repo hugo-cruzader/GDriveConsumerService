@@ -91,16 +91,4 @@ public class HomepageController {
         GoogleTokenResponse response = flow.newTokenRequest(code).setRedirectUri(CALLBACK_URI).execute();
         flow.createAndStoreCredential(response, USER_IDENTIFIER_KEY);
     }
-
-    @GetMapping(value={"/create"})
-    public void createFile(HttpServletResponse response) throws IOException {
-        final Credential credential = flow.loadCredential(USER_IDENTIFIER_KEY);
-        final Drive drive =  new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
-        final File file = new File();
-        file.setName("Sample.txt");
-        final FileContent content = new FileContent("text/plain", demoFile.getFile());
-        final File uploadedFile = drive.files().create(file, content).setFields("id").execute();
-        final String fileReference = String.format("{fileId: %s}", uploadedFile.getId());
-        response.getWriter().write(fileReference);
-    }
 }

@@ -3,19 +3,23 @@ package com.hector.gdriveconsumerservice.demo.component;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.hector.gdriveconsumerservice.demo.entity.DownloadableResource;
+import com.hector.gdriveconsumerservice.demo.entity.ObjectMetadata;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 @Slf4j
@@ -73,6 +77,22 @@ public class GoogleDriveComponentImpl implements GoogleDriveComponent {
                 .content(new ByteArrayResource(outputStream.toByteArray()))
                 .fileName(fileName)
                 .build();
+    }
+
+    @Override
+    public ObjectMetadata uploadFile(final MultipartFile multipartFile) throws IOException {
+        final Drive drive = getDriveClient();
+        // Convert MultipartFile to InputStream
+        final InputStream inputStream = multipartFile.getInputStream();
+        // Create metadata for the Google Drive file
+        final File fileMetadata = new File();
+        fileMetadata.setName(multipartFile.getOriginalFilename());
+        final File uploadedFile = drive.files()
+                .create(fileMetadata, new InputStreamContent(multipartFile.getContentType(), inputStream))
+                .setFields("id, name")
+                .execute();
+        log.info("API UploadFile call successful. New File:[id={}, name={}]", uploadedFile.getId(), uploadedFile.getName());
+        return ObjectMetadata.builder().id(uploadedFile.getId()).name(uploadedFile.getName()).build();
     }
 
     private String adjustFileNameExtension(final String fileName, final String exportMimeType) {

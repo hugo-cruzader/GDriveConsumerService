@@ -1,14 +1,36 @@
 $(document).ready(function(){
 
-    $("#simpleUpload").click(function(){
-        $.ajax({
-            url: '/create',
-            success: function() {
-                alert("File uploaded complete");
-            }
-        });
+    $('#openFileDialog').click(function () {
+        $('#status').text('');
+        $('#fileInput').click();
     });
 
+    $('#fileInput').change(function () {
+        const file = this.files[0];
+        if (file) {
+            // Create FormData and append the file
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // Display status message
+            $('#status').text('Uploading...');
+
+            // Send the file to the server via POST
+            $.ajax({
+                url: '/upload',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $('#status').text('Upload of file "' + response.name + '" successful!');
+                },
+                error: function () {
+                    $('#status').text('Upload failed. Please try again.');
+                }
+            });
+        }
+    });
 
     $("#refreshFileButton").click(function(){
         $.ajax({
