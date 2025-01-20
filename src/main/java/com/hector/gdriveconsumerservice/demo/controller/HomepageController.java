@@ -4,14 +4,11 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeRequestUrl;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.http.HttpTransport;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -22,13 +19,10 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class HomepageController {
 
+    public static final String DASHBOARD_URL = "dashboard.html";
+    public static final String INDEX_URL = "index.html";
+
     private static final String USER_IDENTIFIER_KEY = "DEMO_USER";
-
-    private final HttpTransport HTTP_TRANSPORT;
-    private final JsonFactory JSON_FACTORY;
-
-    @Value("${google.application.name}")
-    private String APPLICATION_NAME;
 
     @Value("${google.oauth.callback.uri}")
     private String CALLBACK_URI;
@@ -46,10 +40,10 @@ public class HomepageController {
                 log.warn("Access token is invalid or expired.");
             } else {
                 log.info("Access token is valid.");
-                return "dashboard.html";
+                return DASHBOARD_URL;
             }
         }
-        return "index.html";
+        return INDEX_URL;
     }
 
     @GetMapping(value={"/googlesignin"})
@@ -64,9 +58,9 @@ public class HomepageController {
         final String code = request.getParameter("code");
         if (code != null) {
             saveToken(code);
-            return "dashboard.html";
+            return DASHBOARD_URL;
         }
-        return "index.html";
+        return INDEX_URL;
     }
 
     private void saveToken(final String code) throws IOException {

@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '3.4.1' // Use the appropriate version
     id 'io.spring.dependency-management' version '1.1.7'
     id 'java'
+    id 'jacoco'
 }
 
 group = 'com.hector'
@@ -36,8 +37,55 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-tasks{
-    test {
-        useJUnitPlatform() // This tells Gradle to use JUnit 5 (Jupiter)
+test {
+    useJUnitPlatform() // Use JUnit 5
+}
+
+jacocoTestReport {
+    dependsOn test // Generate the report after tests
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: ['com/hector/gdriveconsumerservice/demo/configuration/**',
+                                        'com/hector/gdriveconsumerservice/demo/entity/**'])
+        }))
+    }
+}
+
+jacocoTestCoverageVerification {
+    dependsOn jacocoTestReport
+    violationRules {
+        rule {
+            element = 'CLASS'  // Apply rule at the class level
+
+            // Set the minimum required line coverage (e.g., 80%)
+            limit {
+                counter = 'LINE'
+                minimum = 0.80  // Fail if coverage is below 80%
+            }
+
+            // Exclude specific packages from the coverage check
+            excludes = [
+                    'com.hector.gdriveconsumerservice.demo.configuration.*',  // Exclude all classes in config package
+                    'com.hector.gdriveconsumerservice.demo.entity.*',     // Exclude DTO classes
+            ]
+        }
+    }
+}
+
+check.dependsOn jacocoTestCoverageVerification
+
+tasks.register('runApp') {
+    dependsOn assemble
+    dependsOn test
+    dependsOn jacocoTestCoverageVerification
+    doLast {
+        javaexec {
+            mainClass = 'com.hector.gdriveconsumerservice.demo.GDriveConsumerApplication'
+            classpath = sourceSets.main.runtimeClasspath
+        }
     }
 }
