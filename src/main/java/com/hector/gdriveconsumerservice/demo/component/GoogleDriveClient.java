@@ -11,6 +11,10 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+/**
+ * Component class to handle the creation of the Google Drive Client based on the provided credentials by the GoogleAuthorizationCodeFlow
+ * object.
+ */
 @Component
 @RequiredArgsConstructor
 public class GoogleDriveClient {

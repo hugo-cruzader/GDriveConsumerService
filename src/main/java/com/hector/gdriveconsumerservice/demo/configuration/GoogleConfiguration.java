@@ -18,6 +18,9 @@ import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Configuration class for the GoogleAuthorizationCodeFlow.
+ */
 @Configuration
 public class GoogleConfiguration {
 

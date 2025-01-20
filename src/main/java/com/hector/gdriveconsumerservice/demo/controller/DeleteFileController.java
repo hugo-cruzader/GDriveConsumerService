@@ -17,6 +17,12 @@ public class DeleteFileController {
 
     private final GoogleDriveComponent driveComponent;
 
+    /**
+     * Entrypoint for the deleteFile operation.
+     * @param fileId the identifier in Google Drive of the element to delete.
+     * @return An empty successful response if the element has been deleted correctly.
+     * @throws IOException if drive component presents an issue.
+     */
     @DeleteMapping(value ={"/delete/{fileId}"})
     public ResponseEntity<Void> deleteFile(@PathVariable String fileId) throws IOException {
         log.info("Entering deleteFile API rest endpoint...");

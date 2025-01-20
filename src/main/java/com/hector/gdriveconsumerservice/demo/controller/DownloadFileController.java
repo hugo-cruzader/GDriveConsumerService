@@ -21,6 +21,12 @@ public class DownloadFileController {
 
     private final GoogleDriveComponent driveComponent;
 
+    /**
+     * Entrypoint to the downloadFile operation.
+     * @param fileId the Google identifier on G Drive to initiate a download.
+     * @return the file content to be processed/downloaded by the calling entity.
+     * @throws IOException if drive component presents an issue.
+     */
     @GetMapping("/download/{fileId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileId) throws IOException {
         log.info("Entering downloadFile API rest endpoint...");

@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.io.IOException;
 
+/**
+ * Class that holds the welcome page, redirect to Oauth 2.0 for login and then the dashboard of the GDriveConsumerService
+ * when credentials OK.
+ */
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -29,6 +33,11 @@ public class HomepageController {
 
     private final GoogleAuthorizationCodeFlow flow;
 
+    /**
+     * Show the welcome/login page or the Dashboard given the current state of the credentials in the Google Authorization flow.
+     * @return Either the dashboard uri or the index uri.
+     * @throws IOException when GoogleAuthorizationCodeFlow presents a reading issue of the USER_IDENTIFIER_KEY.
+     */
     @GetMapping(value= {"/"})
     public String showHomePage() throws IOException {
         log.info("Entering HomePage...");
@@ -46,6 +55,11 @@ public class HomepageController {
         return INDEX_URL;
     }
 
+    /**
+     * Redirect the user to perform Oauth2.0 login and return to the callback uri.
+     * @param response to process the redirection and callback.
+     * @throws IOException when GoogleAuthorizationCodeFlow presents an issue when retrieving the AuthorizationURL.
+     */
     @GetMapping(value={"/googlesignin"})
     public void doGoogleSignIn(final HttpServletResponse response) throws IOException {
         final GoogleAuthorizationCodeRequestUrl url = flow.newAuthorizationUrl();
@@ -53,6 +67,14 @@ public class HomepageController {
         response.sendRedirect(redirect);
     }
 
+    /**
+     * Retrieves the code from the oauth callback response from sign in and stores a GoogleTokenResponse in the credential storage of the
+     * GoogleAuthorizationCodeFlow for the single user.
+     *
+     * @param request to retrieve the code value from the incoming HTTP Request.
+     * @return the redirection to either the Dashboard view or the Index view, depending on the status of the code retrieved from the request.
+     * @throws IOException if GoogleAuthorizationCodeFlow presents an issue while retrieving a new tokenRequest and/or storing the credentials.
+     */
     @GetMapping(value={"/oauth"})
     public String saveAuthorizationCode(final HttpServletRequest request) throws IOException {
         final String code = request.getParameter("code");

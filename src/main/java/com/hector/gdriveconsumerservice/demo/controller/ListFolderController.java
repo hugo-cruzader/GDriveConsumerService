@@ -19,6 +19,12 @@ import java.util.List;
 public class ListFolderController {
     private final GoogleDriveComponent driveComponent;
 
+    /**
+     * Provides the entrypoint for the listfolder operation, at the moment the list is exhaustively and retrieves all files in the drive.
+     * @param folderId variable to control which folder to open.
+     * @return a {@link List} of {@link ObjectMetadata} containing all folders and files from the user G Drive.
+     * @throws IOException if drive component presents an issue.
+     */
     @GetMapping(value = {"/listfolder"})
     public ResponseEntity<List<ObjectMetadata>> listFolder(@RequestParam(required = false, defaultValue="root") String folderId)
             throws IOException {
