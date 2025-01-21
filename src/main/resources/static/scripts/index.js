@@ -1,37 +1,5 @@
 $(document).ready(function(){
 
-    $('#openFileDialog').click(function () {
-        $('#status').text('');
-        $('#fileInput').click();
-    });
-
-    $('#fileInput').change(function () {
-        const file = this.files[0];
-        if (file) {
-            // Create FormData and append the file
-            const formData = new FormData();
-            formData.append('file', file);
-
-            // Display status message
-            $('#status').text('Uploading...');
-
-            // Send the file to the server via POST
-            $.ajax({
-                url: '/upload',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    $('#status').text('Upload of file "' + response.name + '" successful!');
-                },
-                error: function () {
-                    $('#status').text('Upload failed. Please try again.');
-                }
-            });
-        }
-    });
-
     $("#refreshButton").click(function(){
         window.location.href = 'http://localhost:8080/';
     });
@@ -58,7 +26,9 @@ $(document).ready(function(){
             folderRows += createCol(folder.name);
             folderRows += createCol(folder.type);
             folderRows += createCol(folder.lastMod);
-            folderRows += createCol("");
+            folderRows += createCol('<button class="btn btn-primary upload-btn" data-folder="' + folder.id + '">Upload here</button>'
+                + '<input type="file" class="file-input" data-folder="' + folder.id + '" hidden />'
+                + '<div class="spinner-border text-primary" role="status" data-folder="' + folder.id + '" hidden> <span class="visually-hidden">Loading...</span></div>');
             folderRows += createCol("");
             folderRows += '</tr>';
         });
@@ -76,6 +46,19 @@ $(document).ready(function(){
         });
 
         $("#fileContainer").html($("#fileContainer").html() + fileRows);
+        $('.upload-btn').on('click', function () {
+            const folder = $(this).data('folder');
+            const input = $('.file-input[data-folder="' + folder + '"]');
+            input.click();
+        });
+
+        $('.file-input').on('change', function () {
+            const folder = $(this).data('folder');
+            const file = this.files[0];
+            if (file) {
+                uploadFile(file, folder);
+            }
+        });
     });
 
 });
@@ -89,11 +72,37 @@ function deleteFile(fileId) {
         url:'/delete/' + fileId,
         method: 'DELETE'
     }).done(function(){
-        alert('File has been deleted, refresh list.')
+        alert('File has been deleted')
+        $("#refreshButton").click();
     });
 }
 
 function downloadFile(fileId) {
     // Navigate to the download endpoint directly
     window.location.href = '/download/' + fileId;
+}
+
+function uploadFile(file, folder) {
+    const spinner = $('.spinner-border[data-folder="' + folder + '"]');
+    spinner.removeAttr('hidden');
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folderId', folder);
+    $.ajax({
+        url: '/upload',
+        type: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (response) {
+            console.log('Success:', response);
+            alert('File uploaded to ' + folder);
+            $("#refreshButton").click();
+        },
+        error: function (error) {
+            console.error('Error:', error);
+            alert('Failed to upload to ' + folder);
+            $("#refreshButton").click();
+        }
+    });
 }

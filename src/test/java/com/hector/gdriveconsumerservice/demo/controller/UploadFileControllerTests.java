@@ -30,12 +30,13 @@ public class UploadFileControllerTests {
 
     @Test
     public void uploadFile() throws IOException {
+        final String folderId = "FOLDER_ID";
         final ObjectMetadata uploadedFile = ObjectMetadata.builder()
                 .id("ABC")
                 .name("FakeFile.txt")
                 .build();
-        when(driveComponent.uploadFile(eq(file))).thenReturn(uploadedFile);
+        when(driveComponent.uploadFile(eq(file), eq(folderId))).thenReturn(uploadedFile);
         final ResponseEntity<ObjectMetadata> expected = ResponseEntity.status(HttpStatus.CREATED).body(uploadedFile);
-        assertEquals(expected, uploadFileController.uploadFile(file));
+        assertEquals(expected, uploadFileController.uploadFile(file, folderId));
     }
 }

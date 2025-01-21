@@ -90,6 +90,7 @@ public class GoogleDriveComponentImplTests {
     @Test
     public void uploadFile() throws IOException {
         final String content = "Hello World";
+        final String folderId = "folderId";
         final String fileName = "test.txt";
         final MockMultipartFile mockMultipartFile = new MockMultipartFile(
                 "file", "test.txt", "text/plain", content.getBytes());
@@ -97,13 +98,14 @@ public class GoogleDriveComponentImplTests {
         final ArgumentCaptor<File> captor = ArgumentCaptor.forClass(File.class);
         final ArgumentCaptor<InputStreamContent> inputStreamCaptor = ArgumentCaptor.forClass(InputStreamContent.class);
         when(mockDriveFiles.create(captor.capture(), inputStreamCaptor.capture())).thenReturn(mockDriveFilesCreate);
-        when(mockDriveFilesCreate.setFields(eq("id, name"))).thenReturn(mockDriveFilesCreate);
+        when(mockDriveFilesCreate.setFields(eq("id, name, parents"))).thenReturn(mockDriveFilesCreate);
         when(mockDriveFilesCreate.execute()).thenReturn(mockFile);
         when(mockFile.getId()).thenReturn("ID_UPLOAD");
         when(mockFile.getName()).thenReturn("NAME_UPLOAD");
-        final ObjectMetadata actualObj = driveComponent.uploadFile(mockMultipartFile);
+        final ObjectMetadata actualObj = driveComponent.uploadFile(mockMultipartFile, folderId);
         final String result = new String(inputStreamCaptor.getValue().getInputStream().readAllBytes(), StandardCharsets.UTF_8);
         assertEquals(fileName, captor.getValue().getName());
+        assertEquals(folderId, captor.getValue().getParents().getFirst());
         assertEquals(content, result);
         assertEquals("ID_UPLOAD", actualObj.id());
         assertEquals("NAME_UPLOAD", actualObj.name());

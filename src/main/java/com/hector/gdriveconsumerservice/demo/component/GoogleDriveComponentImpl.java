@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.Map;
 
 @Slf4j
@@ -68,16 +69,17 @@ public class GoogleDriveComponentImpl implements GoogleDriveComponent {
     }
 
     @Override
-    public ObjectMetadata uploadFile(final MultipartFile multipartFile) throws IOException {
+    public ObjectMetadata uploadFile(final MultipartFile multipartFile, final String folderId) throws IOException {
         final Drive drive = driveClient.getDriveClient();
         // Convert MultipartFile to InputStream
         final InputStream inputStream = multipartFile.getInputStream();
         // Create metadata for the Google Drive file
         final File fileMetadata = new File();
         fileMetadata.setName(multipartFile.getOriginalFilename());
+        fileMetadata.setParents(Collections.singletonList(folderId));
         final File uploadedFile = drive.files()
                 .create(fileMetadata, new InputStreamContent(multipartFile.getContentType(), inputStream))
-                .setFields("id, name")
+                .setFields("id, name, parents")
                 .execute();
         log.info("API UploadFile call successful. New File:[id={}, name={}]", uploadedFile.getId(), uploadedFile.getName());
         return ObjectMetadata.builder().id(uploadedFile.getId()).name(uploadedFile.getName()).build();

@@ -36,8 +36,9 @@ public interface GoogleDriveComponent {
     /**
      * Function that handles the processing of an incoming file to upload it to G Drive from the user client.
      * @param multipartFile the file to upload to the G Drive.
+     * @param folderId the id of the folder where the file is going to be uploaded.
      * @return the file metadata after uploading to the user G Drive.
      * @throws IOException when the G Drive client presents an issue while uploading the file to G Drive.
      */
-    ObjectMetadata uploadFile(MultipartFile multipartFile) throws IOException;
+    ObjectMetadata uploadFile(MultipartFile multipartFile, String folderId) throws IOException;
 }

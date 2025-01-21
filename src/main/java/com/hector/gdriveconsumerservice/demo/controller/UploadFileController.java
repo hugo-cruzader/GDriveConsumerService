@@ -23,13 +23,15 @@ public class UploadFileController {
     /**
      * Entrypoint for the uploadFile operation, at the moment the upload occurs to the root folder of the G Drive.
      * @param file The MulipartFile selected in the UI to upload to the G Drive.
+     * @param folderId The folderId to upload the file.
      * @return An ObjectMetadata embedded in the Response status to provide the user with more information about the file they just uploaded.
      * @throws IOException if drive component presents an issue.
      */
     @PostMapping("/upload")
-    public ResponseEntity<ObjectMetadata> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<ObjectMetadata> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("folderId") String folderId)
+            throws IOException {
         log.info("Entering uploadFile API rest endpoint...");
-        final ObjectMetadata response = driveComponent.uploadFile(file);
+        final ObjectMetadata response = driveComponent.uploadFile(file, folderId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
