@@ -15,7 +15,9 @@
 - `./gradlew assemble` builds the project.
 - `./gradlew test` runs the test suites.
 - `./gradlew jacocoTestCoverageVerification` run the test report and checks code coverage.
-- `./gradlew runApp` runs all of the above and starts the appplication if code coverage check passes.  
+- `./gradlew runApp` runs all of the above and starts the appplication if code coverage check passes.
+- `./gradlew integrationTest` runs the integration tests, the app must be running for them to work, and due to some limitations 
+the account must be logged in already. See GoogleOAuthIntegrationTest for more detail
 
 ## After run Steps
 
@@ -28,6 +30,7 @@
 * `01/17` - Finalize implementations Download Delete and Upload File - `4 hours.`
 * `01/19-20` - Added Unit Tests, minor refactoring adding Jacoco code coverage check. - `8 hours`
 * `01/20` - Updated UI to adhere more to the conceptual UI mock presented. - `4 hours`
+* `01/21` - Added integration tests - `4 hours`
 
 ## Project Limitations:
 This is a non-extensive list of elements that were left in the "backlog" considering there was not a set deadline for the project

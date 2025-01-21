@@ -27,7 +27,7 @@ $(document).ready(function(){
             folderRows += createCol(folder.type);
             folderRows += createCol(folder.lastMod);
             folderRows += createCol('<button class="btn btn-primary upload-btn" data-folder="' + folder.id + '">Upload here</button>'
-                + '<input type="file" class="file-input" data-folder="' + folder.id + '" hidden />'
+                + '<input id="' + getName(folder.name, "fd") + '" type="file" class="file-input" data-folder="' + folder.id + '" hidden />'
                 + '<div class="spinner-border text-primary" role="status" data-folder="' + folder.id + '" hidden> <span class="visually-hidden">Loading...</span></div>');
             folderRows += createCol("");
             folderRows += '</tr>';
@@ -40,8 +40,8 @@ $(document).ready(function(){
             fileRows += createCol(file.name);
             fileRows += createCol(file.type);
             fileRows += createCol(file.lastMod);
-            fileRows += createCol('<button class="btn btn-success" onclick="downloadFile(\''+ file.id + '\')">Download</button>');
-            fileRows += createCol('<button class="btn btn-danger" onclick="deleteFile(\''+ file.id + '\')">Delete</button>');
+            fileRows += createCol('<button id="' + getName(file.name, "dw") + '" class="btn btn-success" onclick="downloadFile(\''+ file.id + '\')">Download</button>');
+            fileRows += createCol('<button id="' + getName(file.name, "del") + '"class="btn btn-danger" onclick="deleteFile(\''+ file.id + '\')">Delete</button>');
             fileRows += '</tr>';
         });
 
@@ -62,6 +62,10 @@ $(document).ready(function(){
     });
 
 });
+
+function getName(name, mod) {
+    return name.replace(/ /g, "_") + '_' + mod;
+}
 
 function createCol(value) {
     return '<td>' + value + '</td>';

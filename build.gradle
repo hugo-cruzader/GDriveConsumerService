@@ -15,9 +15,11 @@ repositories {
 }
 
 dependencies {
+    // lombok
     compileOnly 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
 
+    // SpringBoot
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
@@ -35,11 +37,35 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok:1.18.34'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // Selenium Java binding
+    implementation 'org.seleniumhq.selenium:selenium-java:4.27.0'
+
+    // WebDriver manager for handling driver binaries
+    implementation 'io.github.bonigarcia:webdrivermanager:5.9.2'
+    //For Integration tests, TestNG
+    testImplementation 'org.testng:testng:7.10.2'
 }
 
 test {
     useJUnitPlatform() // Use JUnit 5
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    // Exclude the integration test package
+    exclude '**/com/hector/gdriveconsumerservice/demo/integration/**'
 }
+
+tasks.register('integrationTest', Test) {
+    useTestNG() {
+        suites 'src/test/resources/testng.xml'
+    }
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    include '**/com/hector/gdriveconsumerservice/demo/integration/**'
+}
+
 
 jacocoTestReport {
     dependsOn test // Generate the report after tests
