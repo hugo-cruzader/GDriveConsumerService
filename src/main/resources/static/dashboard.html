@@ -17,8 +17,6 @@
         <div class="btn-group" role="group">
             <button type="button" data-bs-toggle="collapse" data-bs-target="#uploadFile"
                     class="btn btn-primary" aria-expanded="false" aria-controls="uploadFile">Simple Upload Demo</button>
-            <button type="button" data-bs-toggle="collapse" data-bs-target="#fileList"
-                    class="btn btn-primary" aria-expanded="false" aria-controls="fileList">File List Demo</button>
         </div>
         <div class="collapse" id="uploadFile">
             <div class="card w-50 start-50 translate-middle-x" >
@@ -33,18 +31,23 @@
                 </div>
             </div>
         </div>
-        <div class="collapse" id="fileList">
-            <div class="card w-50 start-50 translate-middle-x" >
-                <div class="card-body">
-                    <h5 class="card-title">List Files</h5>
-                    <p class="card-text">Click following button to upload server side file.</p>
-                    <button class="btn btn-secondary" id="refreshFileButton">Refresh</button>
-                    <div id="fileListLayout">
+    </div>
 
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="container text-center">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Type of File</th>
+                <th scope="col">Last Modified</th>
+                <th scope="col"></th>
+                <th scope="col"><button class="btn btn-secondary" id="refreshButton">Refresh</button></th>
+            </tr>
+            </thead>
+            <tbody id="fileContainer">
+
+            </tbody>
+        </table>
     </div>
 </body>
 </html>
